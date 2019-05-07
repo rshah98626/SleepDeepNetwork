@@ -77,7 +77,8 @@ eog_model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.op
               		metrics=['accuracy'])
 
 # train model
-eog_model.fit(trainX, trainY, batch_size=batch_size, epochs=epochs, shuffle=True, verbose=1, validation_data=(valX, valY))
+history = eog_model.fit(trainX, trainY, batch_size=batch_size, epochs=epochs, shuffle=True, verbose=1,
+						validation_data=(valX, valY))
 
 # evaluate model
 score = eog_model.evaluate(testX, testY, verbose=0)
