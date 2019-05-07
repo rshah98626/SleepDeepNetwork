@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 import random
 from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
+import EDFFileReader
 
 
 class Model:
@@ -47,36 +48,41 @@ class Model:
 
 
 def get_data(class_num):
-    return None, None, None
+    all_signals, all_labels = EDFFileReader.read_all()
+    fpz = all_signals[:, 0].reshape(-1, 3000, 1)
+    eog = all_signals[:, 1].reshape(-1, 3000, 1)
+    both = np.add(fpz, eog)
+
+    both = (both - np.mean(both, axis=0)) / np.std(both, axis=0)
+    both = both.reshape(-1, 3000, 1)
+
+    return all_labels, [eog, fpz, both]
 
 
-def temp_get_data(class_num):
-    file_path_data = 'firstData.csv'
-    file_path_label = 'firstData_Label.csv'
-    data_csv = pd.read_csv(file_path_data, delimiter=';')
-    labels_csv = pd.read_csv(file_path_label, delimiter=';')
+# def temp_get_data(class_num):
+#     file_path_data = 'firstData.csv'
+#     file_path_label = 'firstData_Label.csv'
+#     data_csv = pd.read_csv(file_path_data, delimiter=';')
+#     labels_csv = pd.read_csv(file_path_label, delimiter=';')
+#
+#     labels = np.array(labels_csv['Hypnogram'][:-1])
+#     eog_in_data = np.array(data_csv['EOG horizontal[uV]'])
+#     fpz_in_data = np.array(data_csv['EEG Fpz-Cz[uV]'])
+#
+#     return labels, eog_in_data, fpz_in_data
 
-    labels = np.array(labels_csv['Hypnogram'][:-1])
-    eog_in_data = np.array(data_csv['EOG horizontal[uV]'])
-    fpz_in_data = np.array(data_csv['EEG Fpz-Cz[uV]'])
 
-    return labels, eog_in_data, fpz_in_data
-
-
-def main(job_dir, class_num, **args):
+def main(job_dir, **args):
     # Setting up the path for saving logs
     logs_path = job_dir + 'logs/tensorboard/'
+    class_num = 6
 
     with tf.device('/device:GPU:0'):
         se = 42
         random.seed(se)
 
         # parse data
-        labels, eog, fpz = temp_get_data(class_num)
-        eog_in_data = eog.reshape(-1, 3000, 1)
-        fpz_in_data = fpz.reshape(-1, 3000, 1)
-        both_in_data = np.add(eog_in_data, fpz_in_data)  # TODO figure out who wants to renormalize
-        input_data = [eog_in_data, fpz_in_data, both_in_data]
+        labels, input_data = get_data(class_num)
 
         for ind, dSet in enumerate(input_data):
             (trainX, testX, trainY, testY) = train_test_split(dSet, labels, test_size=0.3, random_state=se)
@@ -103,7 +109,7 @@ def main(job_dir, class_num, **args):
             # evaluate model
             NN.m.evaluate(testX, testY, verbose=1)
 
-            model_name = 'model' + class_num
+            model_name = 'model' + str(class_num)
             if ind == 0:
                 model_name += 'eog'
             elif ind == 1:
@@ -117,6 +123,7 @@ def main(job_dir, class_num, **args):
                 with file_io.FileIO(job_dir + 'model/' + model_name, mode='w+') as output_f:
                     output_f.write(input_f.read())
 
+
 # App Runner
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -127,11 +134,13 @@ if __name__ == "__main__":
         help='GCS location to write checkpoints and export models',
         required=True
     )
+    '''
     parser.add_argument(
         '--class-num',
         help='Which label set is wanted',
         required=True
     )
+    '''
     args = parser.parse_args()
     arguments = args.__dict__
 

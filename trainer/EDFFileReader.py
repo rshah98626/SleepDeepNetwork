@@ -86,7 +86,7 @@ def label_switcher(label):
 
 def read_all():
     # Read all edf files:
-    path = 'edf-files/edf/'
+    path = '../edf-files/edf/'
     files = os.listdir(path)
     for i in range(0, len(files)):
         files[i] = path + files[i]
@@ -106,20 +106,21 @@ def read_all():
         s, l = cleanup(s, l)
         signals, labels = concat(signals, labels, s, l)
 
-    # Read all edfx files:
-    path = 'edf-files/edfx/'
-    files = os.listdir(path)
-    for i in range(0, len(files)):
-        files[i] = path + files[i]
-
-    # Iterate over edfx files:
-    print("\nReading in edfx files:")
-    for i in range(0, len(files), 2):
-        print("\nFiles ", files[i], " and ", files[i + 1],"...")
-        s, l = read_edfx(files[i], files[i + 1])
-
-        s, l = cleanup(s, l)
-        signals, labels = concat(signals, labels, s, l)
+    # TODO fix reading of edfx files
+    # # Read all edfx files:
+    # path = '../edf-files/edfx/'
+    # files = os.listdir(path)
+    # for i in range(0, len(files)):
+    #     files[i] = path + files[i]
+    #
+    # # Iterate over edfx files:
+    # print("\nReading in edfx files:")
+    # for i in range(0, len(files), 2):
+    #     print("\nFiles ", files[i], " and ", files[i + 1],"...")
+    #     s, l = read_edfx(files[i], files[i + 1])
+    #
+    #     s, l = cleanup(s, l)
+    #     signals, labels = concat(signals, labels, s, l)
 
     return signals, labels
 
@@ -159,4 +160,4 @@ def concat(signals, labels, s, l):
            np.concatenate((labels, l), axis=0)
 
 
-all_signals, all_labels = read_all()
+# all_signals, all_labels = read_all()

@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRED_PACKAGES = ['pandas', 'numpy', 'keras', 'scikit-learn', 'h5py', 'tensorflow']
+REQUIRED_PACKAGES = ['pandas', 'numpy', 'keras', 'scikit-learn', 'h5py', 'pyEDFlib', 'tensorflow']
 
 setup(name='trainer',
       version='0.1',
