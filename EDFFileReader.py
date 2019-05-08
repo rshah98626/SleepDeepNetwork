@@ -86,8 +86,8 @@ def label_switcher(label):
 
 def read_all():
     # Read all edf files:
-    path = '../edf-files/edf/'
-    files = os.listdir(path)
+    path = 'edf-files/edf/'
+    files = sorted(os.listdir(path))
     for i in range(0, len(files)):
         files[i] = path + files[i]
     # print(files)
@@ -109,7 +109,7 @@ def read_all():
     # TODO fix reading of edfx files
     # # Read all edfx files:
     # path = '../edf-files/edfx/'
-    # files = os.listdir(path)
+    # files = sorted(os.listdir(path))
     # for i in range(0, len(files)):
     #     files[i] = path + files[i]
     #
