@@ -4,15 +4,12 @@ from keras.layers import Dense, Flatten, Conv1D
 from keras.layers import Dropout, MaxPool1D
 import keras.backend as K
 from keras import callbacks
-import tensorflow as tf
 K.set_image_data_format('channels_last')
 import numpy as np
 import argparse
-from tensorflow.python.lib.io import file_io
 from sklearn.model_selection import train_test_split
 import random
 from sklearn.preprocessing import LabelBinarizer
-import pandas as pd
 import EDFFileReader
 
 
@@ -77,51 +74,49 @@ def main(job_dir, **args):
     logs_path = job_dir + 'logs/tensorboard/'
     class_num = 6
 
-    with tf.device('/device:GPU:0'):
-        se = 42
-        random.seed(se)
+    # with tf.device('/device:GPU:0'):
+    se = 42
+    random.seed(se)
 
-        # parse data
-        labels, input_data = get_data(class_num)
+    # parse data
+    labels, input_data = get_data(class_num)
 
-        for ind, dSet in enumerate(input_data):
-            (trainX, testX, trainY, testY) = train_test_split(dSet, labels, test_size=0.3, random_state=se)
-            (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
+    for ind, dSet in enumerate(input_data):
+        (trainX, testX, trainY, testY) = train_test_split(dSet, labels, test_size=0.3, random_state=se)
+        (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
 
-            # one hot encoding
-            lb = LabelBinarizer()
-            trainY = lb.fit_transform(trainY)
-            testY = lb.transform(testY)
-            valY = lb.transform(valY)
+        # one hot encoding
+        lb = LabelBinarizer()
+        trainY = lb.fit_transform(trainY)
+        testY = lb.transform(testY)
+        valY = lb.transform(valY)
 
-            # set training params (TODO maybe vary eventually)
-            nb_classes = trainY.shape[1]
-            epochs = 100
-            batch_size = 128  # alt values: (32, 64, 128, 256)
+        # set training params (TODO maybe vary eventually)
+        nb_classes = trainY.shape[1]
+        epochs = 100
+        batch_size = 128  # alt values: (32, 64, 128, 256)
 
-            # create & train model
-            NN = Model(nb_classes, se)
-            tensorboard = callbacks.TensorBoard(log_dir=logs_path, histogram_freq=10, write_graph=True,
-                                                write_images=True)
-            NN.m.fit(trainX, trainY, callbacks=[tensorboard], batch_size=batch_size, epochs=epochs, shuffle=True,
-                     verbose=1, validation_data=(valX, valY))
+        # set model_name
+        model_name = 'model' + str(class_num)
+        if ind == 0:
+            model_name += 'eog'
+        elif ind == 1:
+            model_name += 'fpz'
+        else:
+            model_name += 'both'
 
-            # evaluate model
-            NN.m.evaluate(testX, testY, verbose=1)
+        # create & train model
+        NN = Model(nb_classes, se)
+        tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
+                                            write_images=True)
+        NN.m.fit(trainX, trainY, callbacks=[tensorboard], batch_size=batch_size, epochs=epochs, shuffle=True,
+                 verbose=1, validation_data=(valX, valY))
 
-            model_name = 'model' + str(class_num)
-            if ind == 0:
-                model_name += 'eog'
-            elif ind == 1:
-                model_name += 'fpz'
-            else:
-                model_name += 'both'
-            model_name += '.h5'
+        # evaluate model
+        NN.m.evaluate(testX, testY, verbose=1)
 
-            NN.m.save(model_name)
-            with file_io.FileIO(model_name, mode='r') as input_f:
-                with file_io.FileIO(job_dir + 'model/' + model_name, mode='w+') as output_f:
-                    output_f.write(input_f.read())
+        model_name += '.h5'
+        NN.m.save(model_name)
 
 
 # App Runner
@@ -134,13 +129,12 @@ if __name__ == "__main__":
         help='GCS location to write checkpoints and export models',
         required=True
     )
-    '''
     parser.add_argument(
         '--class-num',
         help='Which label set is wanted',
         required=True
     )
-    '''
+
     args = parser.parse_args()
     arguments = args.__dict__
 
