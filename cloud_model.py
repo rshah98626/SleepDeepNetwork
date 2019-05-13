@@ -79,6 +79,9 @@ def main(job_dir, class_num, **args):
     # parse data
     labels, input_data = get_data(class_num)
 
+    # TODO Fix this hack for testing
+    input_data = input_data[0]
+
     for ind, dSet in enumerate(input_data):
         (trainX, testX, trainY, testY) = train_test_split(dSet, labels, test_size=0.3, random_state=se)
         (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
