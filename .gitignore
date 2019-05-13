@@ -3,3 +3,4 @@ firstData.csv
 firstData_Label.csv
 edf-files/
 .DS_Store
+__pycache__/
