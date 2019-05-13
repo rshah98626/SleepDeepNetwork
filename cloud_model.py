@@ -46,18 +46,23 @@ class Model:
 
 
 def get_data(class_num, in_data_type):
+    # TODO only using edfx data as of now
     # select correct input data
     if in_data_type == 'fpz':
-        signals = np.concatenate((np.load('np_files/edf_fpz.npy'), np.load('np_files/edfx_fpz.npy')), axis=0)
+        # signals = np.concatenate((np.load('np_files/edf_fpz.npy'), np.load('np_files/edfx_fpz.npy')), axis=0)
+        signals = np.load('np_files/edfx_fpz.npy')
     elif in_data_type == 'eog':
-        signals = np.concatenate((np.load('np_files/edf_eog.npy'), np.load('np_files/edfx_eog.npy')), axis=0)
+        # signals = np.concatenate((np.load('np_files/edf_eog.npy'), np.load('np_files/edfx_eog.npy')), axis=0)
+        signals = np.load('np_files/edfx_eog.npy')
     elif in_data_type == 'both':
-        signals = np.concatenate((np.load('np_files/edf_both.npy'), np.load('np_files/edfx_both.npy')), axis=0)
+        # signals = np.concatenate((np.load('np_files/edf_both.npy'), np.load('np_files/edfx_both.npy')), axis=0)
+        signals = np.load('np_files/edfx_both.npy')
     else:
         raise Exception('Invalid third argument. Should be either fpz, eog, or both.')
 
     # clean label set
-    labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
+    # labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
+    labels = np.load('np_files/edfx_labels.npy')
     if class_num == 2:
         labels = EDFFileReader.create_class_two(labels)
     elif class_num == 3:
