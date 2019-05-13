@@ -4,7 +4,7 @@ import pyedflib  # https://pyedflib.readthedocs.io/en/latest/#requirements
 import sys
 
 
-def read_edf(signal_path, hypnogram_path):
+def read_edf_file(signal_path, hypnogram_path):
     f = pyedflib.EdfReader(signal_path)
     # print(f.getSignalLabels())
     signals = np.zeros((f.getNSamples()[0], 2))
@@ -22,7 +22,7 @@ def read_edf(signal_path, hypnogram_path):
     return signals, labels
 
 
-def read_edfx(signal_path, hypnogram_path):
+def read_edfx_file(signal_path, hypnogram_path):
     f = pyedflib.EdfReader(signal_path)
     # print(f.getSignalLabels())
     signals = np.zeros((f.getNSamples()[0], 2))
@@ -70,6 +70,7 @@ def cut(signals, labels):
 
     return signals, labels
 
+
 def label_switcher(label):
     # Transform the labeling of the EDFX database to the same labeling as it was used in
     # the EDF database. From the documentation of the EDF database:
@@ -87,36 +88,51 @@ def label_switcher(label):
     }.get(label, 'Invalid label')
 
 
-def read_all():
+def read_edf_data():
     # Read all edf files:
     files = get_edf_files()
 
     # Iterate over edf files:
     print("\nReading edf files:")
     print("\nFiles", files[1], "and", files[0], "...")
-    signals, labels = read_edf(files[1], files[0])
+    signals, labels = read_edf_file(files[1], files[0])
 
     signals, labels = cleanup(signals, labels)
 
     for i in range(2, len(files), 2):
         print("\nFiles", files[i + 1], " and ", files[i], "...")
-        s, l = read_edf(files[i + 1], files[i])
+        s, l = read_edf_file(files[i + 1], files[i])
 
         s, l = cleanup(s, l)
         signals, labels = concat(signals, labels, s, l)
 
+    return signals, labels
+
+
+def read_edfx_data():
     # Read all edfx files:
     files = get_edfx_files()
 
     # Iterate over edfx files:
     print("\nReading edfx files:")
-    for i in range(0, len(files), 2):
-        print("\nFiles ", files[i], " and ", files[i + 1],"...")
-        s, l = read_edfx(files[i], files[i + 1])
+    print("\nFiles", files[0], "and", files[1], "...")
+    signals, labels = read_edfx_file(files[0], files[1])
+
+    signals, labels = cleanup(signals, labels)
+    for i in range(2, len(files), 2):
+        print("\nFiles ", files[i], " and ", files[i + 1], "...")
+        s, l = read_edfx_file(files[i], files[i + 1])
 
         s, l = cleanup(s, l)
         signals, labels = concat(signals, labels, s, l)
 
+    return signals, labels
+
+
+def read_all_data():
+    edf_signals, edf_labels = read_edf_data()
+    edfx_signals, edfx_labels = read_edf_data()
+    signals, labels = concat(edf_signals, edf_labels, edfx_signals, edfx_labels)
     return signals, labels
 
 
@@ -264,7 +280,6 @@ def create_class_two(labels):
         if labels[i] == 1 or labels[i] == 2 or labels[i] == 3 or labels[i] == 4 or labels[i] == 5:
             labels[i] = 9
     return labels
-
 
 # all_signals, all_labels = read_all()
 # classTwo = createClassTwo(all_labels)
