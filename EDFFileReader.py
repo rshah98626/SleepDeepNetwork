@@ -227,4 +227,45 @@ def prove_starttime():
             else:
                 print('Duration data: 0\n')
 
-read_all()
+
+def create_class_six(labels):
+    return labels
+
+
+def create_class_five(labels):
+    # SWS is #6
+    for i in range(len(labels)):
+        if labels[i] == 3 or labels[i] == 4:
+            labels[i] = 6
+    return labels
+
+
+def create_class_four(labels):
+    # light sleep is #7
+    for i in range(len(labels)):
+        if labels[i] == 3 or labels[i] == 4:
+            labels[i] = 6
+        if labels[i] == 1 or labels[i] == 2:
+            labels[i] = 7
+    return labels
+
+
+def create_class_three(labels):
+    # NREM is #8
+    for i in range(len(labels)):
+        if labels[i] == 1 or labels[i] == 2 or labels[i] == 3 or labels[i] == 4:
+            labels[i] = 8
+    return labels
+
+
+def create_class_two(labels):
+    # Sleep is #9
+    for i in range(len(labels)):
+        if labels[i] == 1 or labels[i] == 2 or labels[i] == 3 or labels[i] == 4 or labels[i] == 5:
+            labels[i] = 9
+    return labels
+
+
+all_signals, all_labels = read_all()
+# classTwo = createClassTwo(all_labels)
+create_class_five(all_labels)
