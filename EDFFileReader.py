@@ -131,9 +131,20 @@ def read_edfx_data():
 
 def read_all_data():
     edf_signals, edf_labels = read_edf_data()
-    edfx_signals, edfx_labels = read_edf_data()
+    edfx_signals, edfx_labels = read_edfx_data()
     signals, labels = concat(edf_signals, edf_labels, edfx_signals, edfx_labels)
     return signals, labels
+
+
+def export_binary():
+    edf_signals, edf_labels = read_edf_data()
+    edfx_signals, edfx_labels = read_edfx_data()
+
+    np.save('edf_signals_binary', edf_signals)
+    np.save('edf_labels_binary', edf_labels)
+    np.save('edfx_signals_binary', edfx_signals)
+    np.save('edfx_labels_binary', edfx_labels)
+
 
 
 def cleanup(signals, labels):

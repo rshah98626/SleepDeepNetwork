@@ -45,30 +45,32 @@ class Model:
                        optimizer=keras.optimizers.Adam(lr=.0001, decay=.003), metrics=['accuracy'])
 
 
-def get_data(class_num):
-    all_signals, all_labels = EDFFileReader.read_all()
-    fpz = all_signals[:, 0].reshape(-1, 3000, 1)
-    eog = all_signals[:, 1].reshape(-1, 3000, 1)
-    both = np.add(fpz, eog)
-
-    # create fpz + eog signal and normalize
-    both = (both - np.mean(both, axis=0)) / np.std(both, axis=0)
-    both = both.reshape(-1, 3000, 1)
+def get_data(class_num, in_data_type):
+    # select correct input data
+    if in_data_type == 'fpz':
+        signals = np.concatenate((np.load('np_files/edf_fpz.npy'), np.load('np_files/edfx_fpz.npy')), axis=0)
+    elif in_data_type == 'eog':
+        signals = np.concatenate((np.load('np_files/edf_eog.npy'), np.load('np_files/edfx_eog.npy')), axis=0)
+    elif in_data_type == 'both':
+        signals = np.concatenate((np.load('np_files/edf_both.npy'), np.load('np_files/edfx_both.npy')), axis=0)
+    else:
+        raise Exception('Invalid third argument. Should be either fpz, eog, or both.')
 
     # clean label set
+    labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
     if class_num == 2:
-        all_labels = EDFFileReader.create_class_two(all_labels)
+        labels = EDFFileReader.create_class_two(labels)
     elif class_num == 3:
-        all_labels = EDFFileReader.create_class_three(all_labels)
+        labels = EDFFileReader.create_class_three(labels)
     elif class_num == 4:
-        all_labels = EDFFileReader.create_class_four(all_labels)
+        labels = EDFFileReader.create_class_four(labels)
     elif class_num == 5:
-        all_labels = EDFFileReader.create_class_five(all_labels)
+        labels = EDFFileReader.create_class_five(labels)
 
-    return all_labels, [eog, fpz, both]
+    return labels, signals
 
 
-def main(job_dir, class_num, **args):
+def main(job_dir, class_num, in_data_type, **args):
     # Setting up the path for saving logs
     logs_path = job_dir + 'logs/tensorboard/'
     # class_num = 6
@@ -78,47 +80,37 @@ def main(job_dir, class_num, **args):
     random.seed(se)
 
     # parse data
-    labels, input_data = get_data(class_num)
+    labels, input_data = get_data(class_num, in_data_type)
 
-    # TODO Fix this hack for testing
-    input_data = input_data[0]
+    (trainX, testX, trainY, testY) = train_test_split(input_data, labels, test_size=0.3, random_state=se)
+    (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
 
-    for ind, dSet in enumerate(input_data):
-        (trainX, testX, trainY, testY) = train_test_split(dSet, labels, test_size=0.3, random_state=se)
-        (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
+    # one hot encoding
+    lb = LabelBinarizer()
+    trainY = lb.fit_transform(trainY)
+    testY = lb.transform(testY)
+    valY = lb.transform(valY)
 
-        # one hot encoding
-        lb = LabelBinarizer()
-        trainY = lb.fit_transform(trainY)
-        testY = lb.transform(testY)
-        valY = lb.transform(valY)
+    # set training params (TODO maybe vary eventually)
+    nb_classes = trainY.shape[1]
+    epochs = 100
+    batch_size = 128  # alt values: (32, 64, 128, 256)
 
-        # set training params (TODO maybe vary eventually)
-        nb_classes = trainY.shape[1]
-        epochs = 100
-        batch_size = 128  # alt values: (32, 64, 128, 256)
+    # set model_name
+    model_name = 'model' + str(class_num) + in_data_type
 
-        # set model_name
-        model_name = 'model' + str(class_num)
-        if ind == 0:
-            model_name += 'eog'
-        elif ind == 1:
-            model_name += 'fpz'
-        else:
-            model_name += 'both'
+    # create & train model
+    NN = Model(nb_classes, se)
+    tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
+                                        write_images=True)
+    NN.m.fit(trainX, trainY, callbacks=[tensorboard], batch_size=batch_size, epochs=epochs, shuffle=True,
+             verbose=1, validation_data=(valX, valY))
 
-        # create & train model
-        NN = Model(nb_classes, se)
-        tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
-                                            write_images=True)
-        NN.m.fit(trainX, trainY, callbacks=[tensorboard], batch_size=batch_size, epochs=epochs, shuffle=True,
-                 verbose=1, validation_data=(valX, valY))
+    # evaluate model
+    NN.m.evaluate(testX, testY, verbose=1)
 
-        # evaluate model
-        NN.m.evaluate(testX, testY, verbose=1)
-
-        model_name += '.h5'
-        NN.m.save(job_dir + 'models/' + model_name)
+    model_name += '.h5'
+    NN.m.save(job_dir + 'models/' + model_name)
 
 
 # App Runner
@@ -141,4 +133,4 @@ if __name__ == "__main__":
     # arguments = args.__dict__
     #
     # main(**arguments)
-    main(sys.argv[1], int(sys.argv[2]))
+    main(sys.argv[1], int(sys.argv[2]), sys.argv[3])
