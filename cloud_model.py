@@ -5,11 +5,12 @@ from keras.layers import Dropout, MaxPool1D
 import keras.backend as K
 from keras import callbacks
 import numpy as np
-import argparse
+# import argparse
 from sklearn.model_selection import train_test_split
 import random
 from sklearn.preprocessing import LabelBinarizer
 import EDFFileReader
+import sys
 K.set_image_data_format('channels_last')
 
 
@@ -117,26 +118,27 @@ def main(job_dir, class_num, **args):
         NN.m.evaluate(testX, testY, verbose=1)
 
         model_name += '.h5'
-        NN.m.save(model_name)
+        NN.m.save(job_dir + 'models/' + model_name)
 
 
 # App Runner
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
-    # Input Args
-    parser.add_argument(
-        '--job-dir',
-        help='GCS location to write checkpoints and export models',
-        required=True
-    )
-    parser.add_argument(
-        '--class-num',
-        help='Which label set is wanted',
-        required=True
-    )
-
-    args = parser.parse_args()
-    arguments = args.__dict__
-
-    main(**arguments)
+    # parser = argparse.ArgumentParser()
+    #
+    # # Input Args
+    # parser.add_argument(
+    #     '--job-dir',
+    #     help='GCS location to write checkpoints and export models',
+    #     required=True
+    # )
+    # parser.add_argument(
+    #     '--class-num',
+    #     help='Which label set is wanted',
+    #     required=True
+    # )
+    #
+    # args = parser.parse_args()
+    # arguments = args.__dict__
+    #
+    # main(**arguments)
+    main(sys.argv[1], int(sys.argv[2]))

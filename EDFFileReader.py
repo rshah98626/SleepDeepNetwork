@@ -266,6 +266,6 @@ def create_class_two(labels):
     return labels
 
 
-all_signals, all_labels = read_all()
+# all_signals, all_labels = read_all()
 # classTwo = createClassTwo(all_labels)
-create_class_five(all_labels)
+# create_class_five(all_labels)
