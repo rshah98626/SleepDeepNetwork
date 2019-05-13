@@ -5,6 +5,7 @@ import requests
 import urllib.request
 from bs4 import BeautifulSoup
 
+
 def edf_filefinder(url):
     html_page = urllib.request.urlopen(url)
     soup = BeautifulSoup(html_page, "html.parser")
@@ -29,9 +30,9 @@ def edf_filefinder(url):
         # Check if the files already exist before downloading
         if not Path(signal_path).is_file() or not Path(hypnogram_path).is_file() or \
                 os.path.getsize(signal_path) != \
-                int(requests.head(rec_filenames[i], allow_redirects=True).headers.get('content-length', None)) or \
+                int(requests.head(rec_links[i], allow_redirects=True).headers.get('content-length', None)) or \
                 os.path.getsize(hypnogram_path) != \
-                int(requests.head(hyp_filenames[i], allow_redirects=True).headers.get('content-length', None)):
+                int(requests.head(hyp_links[i], allow_redirects=True).headers.get('content-length', None)):
 
             # Download Signal and Hypnogram files:
             print("Downloading " + rec_filenames[i] + "...")
@@ -80,3 +81,4 @@ edfx_filefinder(url)
 # Read Sleep Telemetry data:
 url = 'https://www.physionet.org/physiobank/database/sleep-edfx/sleep-telemetry/'
 edfx_filefinder(url)
+

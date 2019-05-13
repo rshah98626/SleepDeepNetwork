@@ -13,18 +13,11 @@ def read_edf(signal_path, hypnogram_path):
 
     g = pyedflib.EdfReader(hypnogram_path)
     # print(g.getSignalLabels())
-    labels = g.readSignal(0).astype(int) #  Hypnogram data
+    labels = g.readSignal(0).astype(int)  # Hypnogram data
 
-    seconds_signals = signals.shape[0] // 100
-    seconds_lables = labels.shape[0] * 30
-    if seconds_signals != seconds_lables:
-        if seconds_signals > seconds_lables:  # Cut off signals
-            signals = signals[0: seconds_lables * 100, :]
-            print(seconds_signals - seconds_lables, "seconds have been cut from signals...")
-        else:  # Cuf off labels
-            labels = labels[0: seconds_signals // 30]
-            signals = signals[0: len(labels) * 3000, :]
-            print(seconds_lables - seconds_signals, "seconds have been cut from labels...")
+    # Prove, if signals or labels is longer (unlabeled data vs labels for
+    # data that does not exist) and cut data accordingly.
+    signals, labels = cut(signals, labels)
 
     return signals, labels
 
@@ -55,14 +48,24 @@ def read_edfx(signal_path, hypnogram_path):
         else:
             labels[second // 30] = label
 
+    # Prove, if signals or labels is longer (unlabeled data vs labels for
+    # data that does not exist) and cut data accordingly.
+    signals, labels = cut(signals, labels)
+
+    return signals, labels
+
+
+def cut(signals, labels):
     seconds_signals = signals.shape[0] // 100
     seconds_lables = labels.shape[0] * 30
     if seconds_signals != seconds_lables:
+
         if seconds_signals > seconds_lables:  # Cut off signals
             signals = signals[0: seconds_lables * 100, :]
             print(seconds_signals - seconds_lables, "seconds have been cut from signals...")
         else:  # Cuf off labels
             labels = labels[0: seconds_signals // 30]
+            signals = signals[0: len(labels) * 3000, :]
             print(seconds_lables - seconds_signals, "seconds have been cut from labels...")
 
     return signals, labels
@@ -86,14 +89,10 @@ def label_switcher(label):
 
 def read_all():
     # Read all edf files:
-    path = 'edf-files/edf/'
-    files = os.listdir(path)
-    for i in range(0, len(files)):
-        files[i] = path + files[i]
-    # print(files)
+    files = get_edf_files()
 
     # Iterate over edf files:
-    print("\nReading in edf files:")
+    print("\nReading edf files:")
     print("\nFiles", files[1], "and", files[0], "...")
     signals, labels = read_edf(files[1], files[0])
 
@@ -107,13 +106,10 @@ def read_all():
         signals, labels = concat(signals, labels, s, l)
 
     # Read all edfx files:
-    path = 'edf-files/edfx/'
-    files = os.listdir(path)
-    for i in range(0, len(files)):
-        files[i] = path + files[i]
+    files = get_edfx_files()
 
     # Iterate over edfx files:
-    print("\nReading in edfx files:")
+    print("\nReading edfx files:")
     for i in range(0, len(files), 2):
         print("\nFiles ", files[i], " and ", files[i + 1],"...")
         s, l = read_edfx(files[i], files[i + 1])
@@ -159,4 +155,76 @@ def concat(signals, labels, s, l):
            np.concatenate((labels, l), axis=0)
 
 
-all_signals, all_labels = read_all()
+def get_edf_files():
+    path = 'edf-files/edf/'
+    files = sorted(os.listdir(path))
+    for i in range(0, len(files)):
+        files[i] = path + files[i]
+    return files
+
+
+def get_edfx_files():
+    path = 'edf-files/edfx/'
+    files = sorted(os.listdir(path))
+
+    # Remove the following files as the Hypnograms don't match the signal recordings
+    # (Tested with  prove_starttime()
+    files_faulty = ['ST7021J0-PSG.edf', 'ST7021JM-Hypnogram.edf',
+                    'ST7071J0-PSG.edf', 'ST7071JA-Hypnogram.edf',
+                    'ST7092J0-PSG.edf', 'ST7092JE-Hypnogram.edf',
+                    'ST7131J0-PSG.edf', 'ST7131JR-Hypnogram.edf',
+                    'ST7132J0-PSG.edf', 'ST7132JR-Hypnogram.edf',
+                    'ST7141J0-PSG.edf', 'ST7141JE-Hypnogram.edf',
+                    'ST7142J0-PSG.edf', 'ST7142JE-Hypnogram.edf']
+    files = sorted(list(set(files) - set(files_faulty)))
+    for i in range(0, len(files)):
+        files[i] = path + files[i]
+    return files
+
+
+def prove_starttime():
+    # Read all edf files:
+    files = get_edf_files()
+
+    for i in range(0, len(files), 2):
+        print('Testing', files[i + 1], 'and', files[i], '...')
+        signals = pyedflib.EdfReader(files[i + 1])
+        hypnogram = pyedflib.EdfReader(files[i])
+
+        signals_start = signals.getStartdatetime()
+        hypnogram_start = hypnogram.getStartdatetime()
+        if signals_start == hypnogram_start:
+            print('OK: signals_start == hypnogram_start')
+        else:
+            print('NOT OK: Signal start time:', signals_start,
+                  ', Hypnogram start time:', hypnogram_start)
+
+    # Read all edfx files:
+    files = get_edfx_files()
+
+    for i in range(0, len(files), 2):
+        print('Testing', files[i], 'and', files[i + 1], '...')
+        try:
+            signals = pyedflib.EdfReader(files[i])
+        except OSError:
+            print("Error occurred when opening", files[i], ":", sys.exc_info()[1], '\n')
+        try:
+            hypnogram = pyedflib.EdfReader(files[i + 1])
+        except OSError:
+            print("Error occurred when opening", files[i + 1], ":", sys.exc_info()[1], '\n')
+
+        signals_start = signals.getStartdatetime()
+        hypnogram_start = hypnogram.getStartdatetime()
+        if signals_start == hypnogram_start:
+            print('OK: signals_start == hypnogram_start')
+        else:
+            print('NOT OK: Signal start time:', signals_start,
+                  'Hypnogram start time:', hypnogram_start)
+            print('Signal recording duration:', signals.file_duration,
+                  ', Hypnogram duration', hypnogram.file_duration)
+            if len(hypnogram.readAnnotations()[0].astype(int)) > 0:
+                print('Duration data:', hypnogram.readAnnotations()[0].astype(int)[-1], '\n')
+            else:
+                print('Duration data: 0\n')
+
+read_all()
