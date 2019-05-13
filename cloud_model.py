@@ -4,13 +4,13 @@ from keras.layers import Dense, Flatten, Conv1D
 from keras.layers import Dropout, MaxPool1D
 import keras.backend as K
 from keras import callbacks
-K.set_image_data_format('channels_last')
 import numpy as np
 import argparse
 from sklearn.model_selection import train_test_split
 import random
 from sklearn.preprocessing import LabelBinarizer
 import EDFFileReader
+K.set_image_data_format('channels_last')
 
 
 class Model:
@@ -50,29 +50,27 @@ def get_data(class_num):
     eog = all_signals[:, 1].reshape(-1, 3000, 1)
     both = np.add(fpz, eog)
 
+    # create fpz + eog signal and normalize
     both = (both - np.mean(both, axis=0)) / np.std(both, axis=0)
     both = both.reshape(-1, 3000, 1)
+
+    # clean label set
+    if class_num == 2:
+        all_labels = EDFFileReader.create_class_two(all_labels)
+    elif class_num == 3:
+        all_labels = EDFFileReader.create_class_three(all_labels)
+    elif class_num == 4:
+        all_labels = EDFFileReader.create_class_four(all_labels)
+    elif class_num == 5:
+        all_labels = EDFFileReader.create_class_five(all_labels)
 
     return all_labels, [eog, fpz, both]
 
 
-# def temp_get_data(class_num):
-#     file_path_data = 'firstData.csv'
-#     file_path_label = 'firstData_Label.csv'
-#     data_csv = pd.read_csv(file_path_data, delimiter=';')
-#     labels_csv = pd.read_csv(file_path_label, delimiter=';')
-#
-#     labels = np.array(labels_csv['Hypnogram'][:-1])
-#     eog_in_data = np.array(data_csv['EOG horizontal[uV]'])
-#     fpz_in_data = np.array(data_csv['EEG Fpz-Cz[uV]'])
-#
-#     return labels, eog_in_data, fpz_in_data
-
-
-def main(job_dir, **args):
+def main(job_dir, class_num, **args):
     # Setting up the path for saving logs
     logs_path = job_dir + 'logs/tensorboard/'
-    class_num = 6
+    # class_num = 6
 
     # with tf.device('/device:GPU:0'):
     se = 42
