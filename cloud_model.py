@@ -11,6 +11,7 @@ import random
 from sklearn.preprocessing import LabelBinarizer
 import EDFFileReader
 import sys
+import os
 K.set_image_data_format('channels_last')
 
 
@@ -75,8 +76,9 @@ def get_data(class_num, in_data_type):
     return labels, signals
 
 
-def main(job_dir, class_num, in_data_type, **args):
+def main(class_num, in_data_type, **args):
     # Setting up the path for saving logs
+    job_dir = os.getcwd()
     logs_path = job_dir + 'logs/tensorboard/'
     # class_num = 6
 
@@ -138,4 +140,4 @@ if __name__ == "__main__":
     # arguments = args.__dict__
     #
     # main(**arguments)
-    main(sys.argv[1], int(sys.argv[2]), sys.argv[3])
+    main(int(sys.argv[2]), sys.argv[3])
