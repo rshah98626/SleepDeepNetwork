@@ -6,3 +6,6 @@ To run cloud_model.py, it takes two arguments:
 2. input data type (either 'fpz', 'eog', or 'both')
 
 A sample command looks like this "python cloud_model.py 6 fpz"
+
+To run the model in the cloud use nohup and pipe the output to another file.
+Sample command "nohup python cloud_model.py 6 both > both6.txt &"
