@@ -47,23 +47,23 @@ class Model:
 
 
 def get_data(class_num, in_data_type):
-    # TODO only using edfx data as of now
+    # TODO only using edf data as of now
     # select correct input data
     if in_data_type == 'fpz':
         # signals = np.concatenate((np.load('np_files/edf_fpz.npy'), np.load('np_files/edfx_fpz.npy')), axis=0)
-        signals = np.load('np_files/edfx_fpz.npy')
+        signals = np.load('np_files/edf_fpz.npy')
     elif in_data_type == 'eog':
         # signals = np.concatenate((np.load('np_files/edf_eog.npy'), np.load('np_files/edfx_eog.npy')), axis=0)
-        signals = np.load('np_files/edfx_eog.npy')
+        signals = np.load('np_files/edf_eog.npy')
     elif in_data_type == 'both':
         # signals = np.concatenate((np.load('np_files/edf_both.npy'), np.load('np_files/edfx_both.npy')), axis=0)
-        signals = np.load('np_files/edfx_both.npy')
+        signals = np.load('np_files/edf_both.npy')
     else:
         raise Exception('Invalid third argument. Should be either fpz, eog, or both.')
 
     # clean label set
     # labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
-    labels = np.load('np_files/edfx_labels.npy')
+    labels = np.load('np_files/edf_labels.npy')
     if class_num == 2:
         labels = EDFFileReader.create_class_two(labels)
     elif class_num == 3:
@@ -76,7 +76,14 @@ def get_data(class_num, in_data_type):
     return labels, signals
 
 
-def main(class_num, in_data_type, **args):
+def main(class_num, in_data_type, batch_size, epochs, **args):
+    # Printing settings for log
+    print('Training with', class_num, 'number of classes and data type:', in_data_type)
+    print('-------------------------')
+    print('Hyper parameter settings:')
+    print('Batch size:', batch_size)
+    print('Epochs:', epochs, '\n\n')
+
     # Setting up the path for saving logs
     job_dir = os.getcwd()
     logs_path = job_dir + 'logs/tensorboard/'
@@ -100,8 +107,8 @@ def main(class_num, in_data_type, **args):
 
     # set training params (TODO maybe vary eventually)
     nb_classes = trainY.shape[1]
-    epochs = 100
-    batch_size = 128  # alt values: (32, 64, 128, 256)
+    # epochs = 30
+    # batch_size = 128  # alt values: (32, 64, 128, 256)
 
     # set model_name
     model_name = 'model' + str(class_num) + in_data_type

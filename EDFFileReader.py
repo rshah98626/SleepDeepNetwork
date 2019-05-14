@@ -7,9 +7,10 @@ import sys
 def read_edf_file(signal_path, hypnogram_path):
     f = pyedflib.EdfReader(signal_path)
     # print(f.getSignalLabels())
-    signals = np.zeros((f.getNSamples()[0], 2))
+    signals = np.zeros((f.getNSamples()[0], 3))
     signals[:, 0] = f.readSignal(0)  # EEG Fpz-Cz
     signals[:, 1] = f.readSignal(2)  # EOG horizontal
+    signals[:, 2] = signals[:, 0] + signals[:, 1]  # EEG Fpz-Cz + EOG horizontal
 
     g = pyedflib.EdfReader(hypnogram_path)
     # print(g.getSignalLabels())
@@ -25,10 +26,10 @@ def read_edf_file(signal_path, hypnogram_path):
 def read_edfx_file(signal_path, hypnogram_path):
     f = pyedflib.EdfReader(signal_path)
     # print(f.getSignalLabels())
-    signals = np.zeros((f.getNSamples()[0], 2))
+    signals = np.zeros((f.getNSamples()[0], 3))
     signals[:, 0] = f.readSignal(0)  # EEG Fpz-Cz
     signals[:, 1] = f.readSignal(2)  # EOG horizontal
-    signals = signals
+    signals[:, 2] = signals[:, 0] + signals[:, 1]  # EEG Fpz-Cz + EOG horizontal
 
     g = pyedflib.EdfReader(hypnogram_path)
     hypno_data = g.readAnnotations()
@@ -144,7 +145,6 @@ def export_binary():
     np.save('edf_labels_binary', edf_labels)
     np.save('edfx_signals_binary', edfx_signals)
     np.save('edfx_labels_binary', edfx_labels)
-
 
 
 def cleanup(signals, labels):
