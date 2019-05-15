@@ -86,7 +86,7 @@ def main(class_num, in_data_type, batch_size, epochs, **args):
 
     # Setting up the path for saving logs
     job_dir = os.getcwd()
-    logs_path = job_dir + 'logs/tensorboard/'
+    logs_path = job_dir + '/logs/tensorboard/'
     # class_num = 6
 
     # with tf.device('/device:GPU:0'):
