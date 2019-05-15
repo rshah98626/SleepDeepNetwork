@@ -19,9 +19,9 @@ K.set_image_data_format('channels_last')
 
 
 class TrainValTensorBoard(TensorBoard):
-    def __init__(self, log_dir='./logs', **kwargs):
+    def __init__(self, model_name, log_dir='./logs', **kwargs):
         # Make the original `TensorBoard` log to a subdirectory 'training'
-        training_log_dir = os.path.join(log_dir, 'training')
+        training_log_dir = os.path.join(log_dir + model_name, 'training')
         super(TrainValTensorBoard, self).__init__(training_log_dir, **kwargs)
 
         # Log the validation metrics to a separate subdirectory
@@ -159,7 +159,7 @@ def main(class_num, in_data_type, batch_size, epochs, **args):
     # tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
     #                                    write_images=True)
 
-    NN.m.fit(trainX, trainY, callbacks=[TrainValTensorBoard(write_graph=False)],
+    NN.m.fit(trainX, trainY, callbacks=[TrainValTensorBoard(model_name=model_name, write_graph=False)],
              batch_size=batch_size, epochs=epochs, shuffle=True, verbose=1, validation_data=(valX, valY))
 
     # evaluate model
