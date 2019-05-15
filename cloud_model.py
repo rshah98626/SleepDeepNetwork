@@ -124,7 +124,7 @@ def main(class_num, in_data_type, batch_size, epochs, **args):
     NN.m.evaluate(testX, testY, verbose=1)
 
     model_name += '.h5'
-    NN.m.save(job_dir + 'models/' + model_name)
+    NN.m.save(job_dir + '/models/' + model_name)
 
 
 # App Runner
@@ -147,4 +147,4 @@ if __name__ == "__main__":
     # arguments = args.__dict__
     #
     # main(**arguments)
-    main(int(sys.argv[2]), sys.argv[3])
+    main(int(sys.argv[1]), sys.argv[2], int(sys.argv[3]), int(sys.argv[4]))
