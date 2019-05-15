@@ -11,6 +11,7 @@ import random
 from sklearn.preprocessing import LabelBinarizer
 import EDFFileReader
 import sys
+import TrainValTensorBoard
 import os
 K.set_image_data_format('channels_last')
 
@@ -115,10 +116,12 @@ def main(class_num, in_data_type, batch_size, epochs, **args):
 
     # create & train model
     NN = Model(nb_classes, se)
-    tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
-                                        write_images=True)
-    NN.m.fit(trainX, trainY, callbacks=[tensorboard], batch_size=batch_size, epochs=epochs, shuffle=True,
-             verbose=1, validation_data=(valX, valY))
+
+    # tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
+    #                                    write_images=True)
+
+    NN.m.fit(trainX, trainY, callbacks=[TrainValTensorBoard(write_graph=False)],
+             batch_size=batch_size, epochs=epochs, shuffle=True, verbose=1, validation_data=(valX, valY))
 
     # evaluate model
     loss_acc = NN.m.evaluate(testX, testY, verbose=1)
