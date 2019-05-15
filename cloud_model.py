@@ -21,11 +21,11 @@ K.set_image_data_format('channels_last')
 class TrainValTensorBoard(TensorBoard):
     def __init__(self, model_name, log_dir='./logs', **kwargs):
         # Make the original `TensorBoard` log to a subdirectory 'training'
-        training_log_dir = os.path.join(log_dir + model_name, 'training')
+        training_log_dir = os.path.join(log_dir, model_name, 'training')
         super(TrainValTensorBoard, self).__init__(training_log_dir, **kwargs)
 
         # Log the validation metrics to a separate subdirectory
-        self.val_log_dir = os.path.join(log_dir, 'validation')
+        self.val_log_dir = os.path.join(log_dir, model_name, 'validation')
 
     def set_model(self, model):
         # Setup writer for validation metrics
