@@ -262,34 +262,40 @@ def create_class_six(labels):
 def create_class_five(labels):
     # SWS is #6
     for i in range(len(labels)):
-        if labels[i] == 3 or labels[i] == 4:
-            labels[i] = 6
+        if labels[i] == 4:
+            labels[i] = 3
+        elif labels[i] == 5:
+            labels[i] = 4
     return labels
 
 
 def create_class_four(labels):
     # light sleep is #7
     for i in range(len(labels)):
-        if labels[i] == 3 or labels[i] == 4:
-            labels[i] = 6
-        if labels[i] == 1 or labels[i] == 2:
-            labels[i] = 7
+        if labels[i] == 4:
+            labels[i] = 3
+        elif labels[i] == 2:
+            labels[i] = 1
+        elif labels[i] == 5:
+            labels[i] = 2
     return labels
 
 
 def create_class_three(labels):
     # NREM is #8
     for i in range(len(labels)):
-        if labels[i] == 1 or labels[i] == 2 or labels[i] == 3 or labels[i] == 4:
-            labels[i] = 8
+        if labels[i] == 2 or labels[i] == 3 or labels[i] == 4:
+            labels[i] = 1
+        elif labels[i] == 5:
+            labels[i] = 2
     return labels
 
 
 def create_class_two(labels):
     # Sleep is #9
     for i in range(len(labels)):
-        if labels[i] == 1 or labels[i] == 2 or labels[i] == 3 or labels[i] == 4 or labels[i] == 5:
-            labels[i] = 9
+        if labels[i] == 2 or labels[i] == 3 or labels[i] == 4 or labels[i] == 5:
+            labels[i] = 1
     return labels
 
 # all_signals, all_labels = read_all()

@@ -6,6 +6,7 @@ import keras.backend as K
 import tensorflow as tf
 # from keras import callbacks
 from keras.callbacks import TensorBoard
+from keras.utils import to_categorical
 import numpy as np
 # import argparse
 from sklearn.model_selection import train_test_split
@@ -140,10 +141,13 @@ def main(class_num, in_data_type, batch_size, epochs, **args):
     (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
 
     # one hot encoding
-    lb = LabelBinarizer()
-    trainY = lb.fit_transform(trainY)
-    testY = lb.transform(testY)
-    valY = lb.transform(valY)
+    # lb = LabelBinarizer()
+    # trainY = lb.fit_transform(trainY)
+    # testY = lb.transform(testY)
+    # valY = lb.transform(valY)
+    trainY = to_categorical(trainY)
+    testY = to_categorical(testY)
+    valY = to_categorical(valY)
 
     # set training params (TODO maybe vary eventually)
     nb_classes = trainY.shape[1]
