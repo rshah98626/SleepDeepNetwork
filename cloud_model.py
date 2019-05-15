@@ -121,7 +121,9 @@ def main(class_num, in_data_type, batch_size, epochs, **args):
              verbose=1, validation_data=(valX, valY))
 
     # evaluate model
-    NN.m.evaluate(testX, testY, verbose=1)
+    loss_acc = NN.m.evaluate(testX, testY, verbose=1)
+    print("Test Loss is " + str(loss_acc[0]))
+    print("Test Acc is " + str(loss_acc[1]))
 
     model_name += '.h5'
     NN.m.save(job_dir + '/models/' + model_name)
