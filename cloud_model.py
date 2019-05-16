@@ -136,12 +136,7 @@ class Model:
         self.m.add(BatchNormalization())
         self.m.add(Activation("relu"))
         self.m.add(Dropout(0.2, seed=se))
-        # self.m.add(Dense(nb_classes, activation='softmax'))
-        # BATCH-NORM:
-        self.m.add(Dense(nb_classes, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("softmax"))
-
+        self.m.add(Dense(nb_classes, activation='softmax'))
 
         self.m.compile(loss=keras.losses.categorical_crossentropy,
                        optimizer=keras.optimizers.Adam(lr=.0001, decay=.003), metrics=['accuracy'])
@@ -153,8 +148,15 @@ def get_data(dataset, class_num, in_data_type):
         raise Exception(in_data_type + ' is an invalid in_data_type. Should be either fpz, eog, or both.')
     if dataset != 'edf' and dataset != 'edfx' and dataset != 'both':
         raise Exception(dataset + ' is an invalid dataset. Should be either edf, edfx or both.')
-    filepath = 'np_files/' + dataset + '_' + in_data_type + '.npy'
-    signals = np.load(filepath)
+
+    if dataset == 'both':  # If all data is requested, concatenate edf and edfx datasets:
+        filepath = 'np_files/edf_' + in_data_type + '.npy'
+        signals = np.load(filepath)
+        filepath = 'np_files/edfx_' + in_data_type + '.npy'
+        signals = np.concatenate(signals, np.load(filepath))
+    else:
+        filepath = 'np_files/' + dataset + '_' + in_data_type + '.npy'
+        signals = np.load(filepath)
 
     # clean label set
     # labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
