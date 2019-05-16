@@ -57,84 +57,102 @@ class TrainValTensorBoard(TensorBoard):
 
 
 class Model:
-    def __init__(self, nb_classes, se):
+    def __init__(self, nb_classes, se, BN):
         # input dim
         in_shape = (3000, 1)
 
         # create model
         self.m = Sequential()
-        # self.m.add(Conv1D(64, 5, strides=3, activation='relu', input_shape=in_shape))
-        # BATCH-NORM:
-        self.m.add(Conv1D(64, 5, strides=3, input_shape=in_shape, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
 
-        # self.m.add(Conv1D(128, 5, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(128, 5, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+        if not BN:
+            self.m.add(Conv1D(64, 5, strides=3, activation='relu', input_shape=in_shape))
+        else:
+            self.m.add(Conv1D(64, 5, strides=3, input_shape=in_shape, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
+
+        if not BN:
+            self.m.add(Conv1D(128, 5, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(128, 5, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
 
         self.m.add(MaxPool1D(pool_size=2, strides=2))
         self.m.add(Dropout(0.2, seed=se))
-        # self.m.add(Conv1D(128, 13, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(128, 13, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
 
-        # self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(256, 7, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+        if not BN:
+            self.m.add(Conv1D(128, 13, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(128, 13, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
 
-        self.m.add(MaxPool1D(pool_size=2, strides=2))
-        # self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(256, 7, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
-
-        # self.m.add(Conv1D(64, 4, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(64, 4, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+        if not BN:
+            self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(256, 7, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
 
         self.m.add(MaxPool1D(pool_size=2, strides=2))
-        # self.m.add(Conv1D(32, 3, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(32, 3, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
 
-        # self.m.add(Conv1D(64, 6, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(64, 6, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+        if not BN:
+            self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(256, 7, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
+
+        if not BN:
+            self.m.add(Conv1D(64, 4, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(64, 4, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
 
         self.m.add(MaxPool1D(pool_size=2, strides=2))
-        # self.m.add(Conv1D(8, 5, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(8, 5, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
 
-        # self.m.add(Conv1D(8, 2, strides=1, activation='relu'))
-        # BATCH-NORM:
-        self.m.add(Conv1D(8, 2, strides=1, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+        if not BN:
+            self.m.add(Conv1D(32, 3, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(32, 3, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
+
+        if not BN:
+            self.m.add(Conv1D(64, 6, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(64, 6, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
+
+        self.m.add(MaxPool1D(pool_size=2, strides=2))
+
+        if not BN:
+            self.m.add(Conv1D(8, 5, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(8, 5, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
+
+        if not BN:
+            self.m.add(Conv1D(8, 2, strides=1, activation='relu'))
+        else:
+            self.m.add(Conv1D(8, 2, strides=1, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
 
         self.m.add(MaxPool1D(pool_size=2, strides=2))
         self.m.add(Flatten())
-        # self.m.add(Dense(64, activation='relu'))  # TODO paper mentions drop = 0.2 so check if that means another dropout layer
-        # BATCH-NORM:
-        self.m.add(Dense(64, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+
+        if not BN:
+            self.m.add(Dense(64, activation='relu'))  # TODO paper mentions drop = 0.2 so check if that means another dropout layer
+        else:
+            self.m.add(Dense(64, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
+
         self.m.add(Dropout(0.2, seed=se))
         self.m.add(Dense(nb_classes, activation='softmax'))
 
@@ -142,25 +160,38 @@ class Model:
                        optimizer=keras.optimizers.Adam(lr=.0001, decay=.003), metrics=['accuracy'])
 
 
-def get_data(dataset, class_num, in_data_type):
+def get_data(dataset, class_num, in_data_type, normalization):
     # select correct input data
     if in_data_type != 'fpz' and in_data_type != 'eog' and in_data_type != 'both':
         raise Exception(in_data_type + ' is an invalid in_data_type. Should be either fpz, eog, or both.')
     if dataset != 'edf' and dataset != 'edfx' and dataset != 'both':
         raise Exception(dataset + ' is an invalid dataset. Should be either edf, edfx or both.')
 
-    if dataset == 'both':  # If all data is requested, concatenate edf and edfx datasets:
-        filepath = 'np_files/edf_' + in_data_type + '.npy'
-        signals = np.load(filepath)
-        filepath = 'np_files/edfx_' + in_data_type + '.npy'
-        signals = np.concatenate(signals, np.load(filepath))
+    if normalization == 'patient':
+        if dataset == 'both':  # If all data is requested, concatenate edf and edfx datasets:
+            filepath = 'np_files/edf_' + in_data_type + '.npy'
+            signals = np.load(filepath)
+            filepath = 'np_files/edfx_' + in_data_type + '.npy'
+            signals = np.concatenate(signals, np.load(filepath))
+        else:
+            filepath = 'np_files/' + dataset + '_' + in_data_type + '.npy'
+            signals = np.load(filepath)
     else:
-        filepath = 'np_files/' + dataset + '_' + in_data_type + '.npy'
-        signals = np.load(filepath)
+        if dataset == 'both':  # If all data is requested, concatenate edf and edfx datasets:
+            filepath = 'np_files/edf_' + in_data_type + '_norm.npy'
+            signals = np.load(filepath)
+            filepath = 'np_files/edfx_' + in_data_type + '_norm.npy'
+            signals = np.concatenate(signals, np.load(filepath))
+        else:
+            filepath = 'np_files/' + dataset + '_' + in_data_type + '_norm.npy'
+            signals = np.load(filepath)
 
     # clean label set
-    # labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
-    labels = np.load('np_files/edf_labels.npy')
+    if dataset == 'both':
+        labels = np.concatenate((np.load('np_files/edf_labels.npy'), np.load('np_files/edfx_labels.npy')), axis=0)
+    else:
+        labels = np.load('np_files/' + dataset + '_labels.npy')
+
     if class_num == 2:
         labels = EDFFileReader.create_class_two(labels)
     elif class_num == 3:
@@ -173,7 +204,7 @@ def get_data(dataset, class_num, in_data_type):
     return labels, signals
 
 
-def main(dataset, class_num, in_data_type, batch_size, epochs, tensorboard_dir='', **args):
+def main(dataset, class_num, in_data_type, batch_size, epochs, normalization, BN, tensorboard_dir='', **args):
     # Printing settings for log
     print('Training with', dataset, ' dataset,', class_num, 'number of classes and data type:', in_data_type)
     print('-------------------------------------------------')
@@ -191,7 +222,7 @@ def main(dataset, class_num, in_data_type, batch_size, epochs, tensorboard_dir='
     random.seed(se)
 
     # parse data
-    labels, input_data = get_data(dataset, class_num, in_data_type)
+    labels, input_data = get_data(dataset, class_num, in_data_type, normalization)
 
     (trainX, testX, trainY, testY) = train_test_split(input_data, labels, test_size=0.3, random_state=se)
     (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
@@ -218,7 +249,7 @@ def main(dataset, class_num, in_data_type, batch_size, epochs, tensorboard_dir='
         model_name = tensorboard_dir
 
     # create & train model
-    NN = Model(nb_classes, se)
+    NN = Model(nb_classes, se, BN)
 
     # tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
     #                                    write_images=True)
@@ -255,7 +286,9 @@ if __name__ == "__main__":
     # arguments = args.__dict__
     #
     # main(**arguments)
-    if len(sys.argv) == 6:  # tensorboard_dir not provided
-        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]))
+
+    # dataset, class_num, in_data_type, batch_size, epochs, normalization (patient or dataset), BN (1 or 0), tensorboard_dir
+    if len(sys.argv) == 8:  # tensorboard_dir not provided
+        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6], int(sys.argv[7]))
     else:  # tensorboard_dir provided
-        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6])
+        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6], int(sys.argv[7]), sys.argv[8])
