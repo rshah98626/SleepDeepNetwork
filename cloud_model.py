@@ -1,7 +1,7 @@
 import keras as keras
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, Conv1D
-from keras.layers import Dropout, MaxPool1D
+from keras.layers import Dropout, MaxPool1D, BatchNormalization, Activation
 import keras.backend as K
 import tensorflow as tf
 # from keras import callbacks
@@ -63,26 +63,85 @@ class Model:
 
         # create model
         self.m = Sequential()
-        self.m.add(Conv1D(64, 5, strides=3, activation='relu', input_shape=in_shape))
-        self.m.add(Conv1D(128, 5, strides=1, activation='relu'))
+        # self.m.add(Conv1D(64, 5, strides=3, activation='relu', input_shape=in_shape))
+        # BATCH-NORM:
+        self.m.add(Conv1D(64, 5, strides=3, input_shape=in_shape, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
+        # self.m.add(Conv1D(128, 5, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(128, 5, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
         self.m.add(MaxPool1D(pool_size=2, strides=2))
         self.m.add(Dropout(0.2, seed=se))
-        self.m.add(Conv1D(128, 13, strides=1, activation='relu'))
-        self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
+        # self.m.add(Conv1D(128, 13, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(128, 13, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
+        # self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(256, 7, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
         self.m.add(MaxPool1D(pool_size=2, strides=2))
-        self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
-        self.m.add(Conv1D(64, 4, strides=1, activation='relu'))
+        # self.m.add(Conv1D(256, 7, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(256, 7, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
+        # self.m.add(Conv1D(64, 4, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(64, 4, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
         self.m.add(MaxPool1D(pool_size=2, strides=2))
-        self.m.add(Conv1D(32, 3, strides=1, activation='relu'))
-        self.m.add(Conv1D(64, 6, strides=1, activation='relu'))
+        # self.m.add(Conv1D(32, 3, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(32, 3, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
+        # self.m.add(Conv1D(64, 6, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(64, 6, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
         self.m.add(MaxPool1D(pool_size=2, strides=2))
-        self.m.add(Conv1D(8, 5, strides=1, activation='relu'))
-        self.m.add(Conv1D(8, 2, strides=1, activation='relu'))
+        # self.m.add(Conv1D(8, 5, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(8, 5, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
+        # self.m.add(Conv1D(8, 2, strides=1, activation='relu'))
+        # BATCH-NORM:
+        self.m.add(Conv1D(8, 2, strides=1, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
+
         self.m.add(MaxPool1D(pool_size=2, strides=2))
         self.m.add(Flatten())
-        self.m.add(Dense(64, activation='relu'))  # TODO paper mentions drop = 0.2 so check if that means another dropout layer
+        # self.m.add(Dense(64, activation='relu'))  # TODO paper mentions drop = 0.2 so check if that means another dropout layer
+        # BATCH-NORM:
+        self.m.add(Dense(64, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("relu"))
         self.m.add(Dropout(0.2, seed=se))
-        self.m.add(Dense(nb_classes, activation='softmax'))
+        # self.m.add(Dense(nb_classes, activation='softmax'))
+        # BATCH-NORM:
+        self.m.add(Dense(nb_classes, use_bias=False))
+        self.m.add(BatchNormalization())
+        self.m.add(Activation("softmax"))
+
 
         self.m.compile(loss=keras.losses.categorical_crossentropy,
                        optimizer=keras.optimizers.Adam(lr=.0001, decay=.003), metrics=['accuracy'])
