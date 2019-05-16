@@ -81,6 +81,7 @@ class Model:
         self.m.add(MaxPool1D(pool_size=2, strides=2))
         self.m.add(Flatten())
         self.m.add(Dense(64, activation='relu'))  # TODO paper mentions drop = 0.2 so check if that means another dropout layer
+        self.m.add(Dropout(0.2, seed=se))
         self.m.add(Dense(nb_classes, activation='softmax'))
 
         self.m.compile(loss=keras.losses.categorical_crossentropy,
