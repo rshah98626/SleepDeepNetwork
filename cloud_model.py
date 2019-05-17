@@ -207,10 +207,10 @@ def get_data(dataset, class_num, in_data_type, normalization):
     return labels, signals
 
 
-def get_data2(class_num):
-    signals = np.concatenate((np.load('np_files/edf_fpz.npy'), np.load('np_files/edf_eog.npy')), axis=2)
+def get_data2(dataset, class_num):
+    signals = np.concatenate((np.load('np_files/' + dataset + '_fpz.npy'), np.load('np_files/' + dataset + '_eog.npy')), axis=2)
 
-    labels = np.load('np_files/edf_labels.npy')
+    labels = np.load('np_files/' + dataset + '_labels.npy')
     if class_num == 2:
         labels = EDFFileReader.create_class_two(labels)
     elif class_num == 3:
@@ -242,7 +242,7 @@ def main(dataset, class_num, in_data_type, batch_size, epochs, normalization, BN
 
     # parse data
     if twoD:
-        labels, input_data = get_data2(class_num)
+        labels, input_data = get_data2(dataset, class_num)
     else:
         labels, input_data = get_data(dataset, class_num, in_data_type, normalization)
 
