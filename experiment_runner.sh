@@ -1,4 +1,7 @@
 #!/bin/sh
+nohup python cloud_model.py edfx 6 fpz 128 100 patient 1 1 experiment12 > out_logs/experiment12.txt &
+wait
+echo Finished Experiment 12
 echo Starting to cloud models
 nohup python cloud_model.py edfx 6 fpz 128 100 patient 1 0 experiment5 > out_logs/experiment5.txt &
 wait
@@ -21,9 +24,6 @@ echo Finished Experiment 7
 # nohup python cloud_model.py edf 6 fpz 128 50 patient 1 1 experiment11 > out_logs/experiment11.txt
 # wait
 # echo Finished Experiment 11
-nohup python cloud_model.py edfx 6 fpz 128 100 patient 1 1 experiment12 > out_logs/experiment12.txt &
-wait
-echo Finished Experiment 12
 nohup python cloud_model.py edf 6 fpz 512 50 patient 0 0 experiment13 > out_logs/experiment13.txt &
 wait
 echo Finished Experiment 13
