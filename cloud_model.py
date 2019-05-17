@@ -1,6 +1,6 @@
 import keras as keras
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, Conv1D
+from keras.layers import Dense, Flatten, Conv1D, Conv2D
 from keras.layers import Dropout, MaxPool1D, BatchNormalization, Activation
 import keras.backend as K
 import tensorflow as tf
@@ -57,9 +57,12 @@ class TrainValTensorBoard(TensorBoard):
 
 
 class Model:
-    def __init__(self, nb_classes, se, BN):
+    def __init__(self, nb_classes, se, BN, twoD):
         # input dim
-        in_shape = (3000, 1)
+        if twoD:
+            in_shape = (3000, 2)
+        else:
+            in_shape = (3000, 1)
 
         # create model
         self.m = Sequential()
@@ -204,7 +207,23 @@ def get_data(dataset, class_num, in_data_type, normalization):
     return labels, signals
 
 
-def main(dataset, class_num, in_data_type, batch_size, epochs, normalization, BN, tensorboard_dir='', **args):
+def get_data2(class_num):
+    signals = np.concatenate((np.load('np_files/edf_fpz.npy'), np.load('np_files/edf_eog.npy')), axis=2)
+
+    labels = np.load('np_files/edf_labels.npy')
+    if class_num == 2:
+        labels = EDFFileReader.create_class_two(labels)
+    elif class_num == 3:
+        labels = EDFFileReader.create_class_three(labels)
+    elif class_num == 4:
+        labels = EDFFileReader.create_class_four(labels)
+    elif class_num == 5:
+        labels = EDFFileReader.create_class_five(labels)
+
+    return labels, signals
+
+
+def main(dataset, class_num, in_data_type, batch_size, epochs, normalization, BN, twoD, tensorboard_dir='', **args):
     # Printing settings for log
     print('Training with', dataset, ' dataset,', class_num, 'number of classes and data type:', in_data_type)
     print('-------------------------------------------------')
@@ -222,7 +241,10 @@ def main(dataset, class_num, in_data_type, batch_size, epochs, normalization, BN
     random.seed(se)
 
     # parse data
-    labels, input_data = get_data(dataset, class_num, in_data_type, normalization)
+    if twoD:
+        labels, input_data = get_data2(class_num)
+    else:
+        labels, input_data = get_data(dataset, class_num, in_data_type, normalization)
 
     (trainX, testX, trainY, testY) = train_test_split(input_data, labels, test_size=0.3, random_state=se)
     (valX, testX, valY, testY) = train_test_split(testX, testY, test_size=0.5, random_state=se)
@@ -249,7 +271,7 @@ def main(dataset, class_num, in_data_type, batch_size, epochs, normalization, BN
         model_name = tensorboard_dir
 
     # create & train model
-    NN = Model(nb_classes, se, BN)
+    NN = Model(nb_classes, se, BN, twoD)
 
     # tensorboard = callbacks.TensorBoard(log_dir=logs_path + model_name, histogram_freq=10, write_graph=True,
     #                                    write_images=True)
@@ -287,8 +309,11 @@ if __name__ == "__main__":
     #
     # main(**arguments)
 
-    # dataset, class_num, in_data_type, batch_size, epochs, normalization (patient or dataset), BN (1 or 0), tensorboard_dir
-    if len(sys.argv) == 8:  # tensorboard_dir not provided
-        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6], int(sys.argv[7]))
+    # dataset, class_num, in_data_type, batch_size, epochs, normalization (patient or dataset), BN (1 or 0), 2D (1 or 0), tensorboard_dir
+    if len(sys.argv) == 9:  # tensorboard_dir not provided
+        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6],
+             int(sys.argv[7]), int(sys.argv[8]))
+
     else:  # tensorboard_dir provided
-        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6], int(sys.argv[7]), sys.argv[8])
+        main(sys.argv[1], int(sys.argv[2]), sys.argv[3], int(sys.argv[4]), int(sys.argv[5]), sys.argv[6],
+             int(sys.argv[7]), int(sys.argv[8]), sys.argv[9])
