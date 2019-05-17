@@ -7,10 +7,10 @@ import sys
 def read_edf_file(signal_path, hypnogram_path):
     f = pyedflib.EdfReader(signal_path)
     # print(f.getSignalLabels())
-    signals = np.zeros((f.getNSamples()[0], 3))
-    signals[:, 0] = f.readSignal(0)  # EEG Fpz-Cz
-    signals[:, 1] = f.readSignal(2)  # EOG horizontal
-    signals[:, 2] = signals[:, 0] + signals[:, 1]  # EEG Fpz-Cz + EOG horizontal
+    signals = np.zeros((f.getNSamples()[0], 3), dtype=np.float32)
+    signals[:, 0] = f.readSignal(0).astype(np.float32)  # EEG Fpz-Cz
+    signals[:, 1] = f.readSignal(2).astype(np.float32)  # EOG horizontal
+    signals[:, 2] = signals[:, 0].astype(np.float32) + signals[:, 1].astype(np.float32)  # EEG Fpz-Cz + EOG horizontal
 
     g = pyedflib.EdfReader(hypnogram_path)
     # print(g.getSignalLabels())
@@ -26,10 +26,10 @@ def read_edf_file(signal_path, hypnogram_path):
 def read_edfx_file(signal_path, hypnogram_path):
     f = pyedflib.EdfReader(signal_path)
     # print(f.getSignalLabels())
-    signals = np.zeros((f.getNSamples()[0], 3))
-    signals[:, 0] = f.readSignal(0)  # EEG Fpz-Cz
-    signals[:, 1] = f.readSignal(2)  # EOG horizontal
-    signals[:, 2] = signals[:, 0] + signals[:, 1]  # EEG Fpz-Cz + EOG horizontal
+    signals = np.zeros((f.getNSamples()[0], 3), dtype=np.float32)
+    signals[:, 0] = f.readSignal(0).astype(np.float32)  # EEG Fpz-Cz
+    signals[:, 1] = f.readSignal(2).astype(np.float32)  # EOG horizontal
+    signals[:, 2] = signals[:, 0].astype(np.float32) + signals[:, 1].astype(np.float32)  # EEG Fpz-Cz + EOG horizontal
 
     g = pyedflib.EdfReader(hypnogram_path)
     hypno_data = g.readAnnotations()
