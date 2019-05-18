@@ -1,4 +1,5 @@
 #!/bin/sh
+conda activate myenv1
 nohup python cloud_model.py edfx 6 fpz 128 100 patient 1 1 experiment12 > out_logs/experiment12.txt &
 wait
 echo Finished Experiment 12
