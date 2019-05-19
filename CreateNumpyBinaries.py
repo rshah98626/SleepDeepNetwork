@@ -25,7 +25,8 @@ def export_edf(normalize_per_patient):
         edf_signals = sk.scale(edf_signals)
 
     # Scale signals between (0, 1)
-    edf_signals = sk.MinMaxScaler(feature_range=(0, 1)).fit_transform(edf_signals)
+    # Stated in the paper, but not used as it is hard to train with this data without batch normalization.
+    # edf_signals = sk.MinMaxScaler(feature_range=(0, 1)).fit_transform(edf_signals)
 
     fpz_edf = edf_signals[:, 0].reshape(-1, 3000, 1)
     eog_edf = edf_signals[:, 1].reshape(-1, 3000, 1)
@@ -57,7 +58,8 @@ def export_edfx(normalize_per_patient):
         edfx_signals = sk.scale(edfx_signals, copy=False, axis=0)
 
     # Scale signals between (0, 1)
-    edfx_signals = sk.MinMaxScaler(feature_range=(0, 1)).fit_transform(edfx_signals)
+    # Stated in the paper, but not used as it is hard to train with this data without batch normalization.
+    # edfx_signals = sk.MinMaxScaler(feature_range=(0, 1)).fit_transform(edfx_signals)
 
     fpz_edfx = edfx_signals[:, 0].reshape(-1, 3000, 1)
     eog_edfx = edfx_signals[:, 1].reshape(-1, 3000, 1)

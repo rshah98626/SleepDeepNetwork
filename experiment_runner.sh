@@ -31,3 +31,9 @@ echo Finished Experiment 13
 nohup python cloud_model.py edf 6 fpz 1024 50 patient 0 0 experiment14 > out_logs/experiment14.txt &
 wait
 echo Finished Experiment 14
+nohup python cloud_model.py edfx 6 fpz 128 30 patient 1 0 experiment15 > out_logs/experiment15.txt &
+wait
+echo Finished Experiment 15
+nohup python cloud_model.py edfx 6 fpz 2048 100 patient 1 0 experiment16 > out_logs/experiment16.txt &
+wait
+echo Finished Experiment 16

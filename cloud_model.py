@@ -150,7 +150,7 @@ class Model:
         self.m.add(Flatten())
 
         if not BN:
-            self.m.add(Dense(64, activation='relu'))  # TODO paper mentions drop = 0.2 so check if that means another dropout layer
+            self.m.add(Dense(64, activation='relu'))
         else:
             self.m.add(Dense(64, use_bias=False))
             self.m.add(BatchNormalization())
