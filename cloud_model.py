@@ -149,13 +149,12 @@ class Model:
         self.m.add(MaxPool1D(pool_size=2, strides=2))
         self.m.add(Flatten())
 
-        # TODO: Just a hardcoded try: run BN just on the last layer.
-        # if not BN:
-        #    self.m.add(Dense(64, activation='relu'))
-        # else:
-        self.m.add(Dense(64, use_bias=False))
-        self.m.add(BatchNormalization())
-        self.m.add(Activation("relu"))
+        if not BN:
+           self.m.add(Dense(64, activation='relu'))
+        else:
+            self.m.add(Dense(64, use_bias=False))
+            self.m.add(BatchNormalization())
+            self.m.add(Activation("relu"))
 
         self.m.add(Dropout(0.2, seed=se))
         self.m.add(Dense(nb_classes, activation='softmax'))
