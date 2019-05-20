@@ -7,9 +7,12 @@ To run cloud_model.py, it takes four arguments:
 3. input data type (either 'fpz', 'eog', or 'both')
 4. batch size (typically 128, alt values: 32, 64, 128, 256)
 5. number of epochs
-6. name of the tensorboard directory (not needed, default: 'model' + class label setting + input data type, e.g. model6fpz)
+6. normalization (per patient or per dataset)
+7. batch normalization (1 for true, 0 for false)
+8. 2-D feature input (1 or 0)
+9. (OPTIONAL)name of the tensorboard directory (not needed, default: 'model' + class label setting + input data type, e.g. model6fpz)
 
-A sample command looks like this "python cloud_model.py 6 fpz 128 100"
+A sample command looks like this "python cloud_model.py 6 fpz 128 100 patient 1 0 logs/"
 
 To run the model in the cloud use nohup and pipe the output to another file.
 Sample command "nohup python cloud_model.py 6 both 128 30 > both6.txt &"
